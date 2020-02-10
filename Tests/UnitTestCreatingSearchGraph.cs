@@ -4,7 +4,7 @@ using project;
 
 namespace Tests
 {
-    public class UnitTestCreatingGraph
+    public class UnitTestCreatingSearchGraph
     {
 
         static List<(List<List<int>> source, int value, bool result)> data = new List<(List<List<int>> source, int value, bool result)> {
