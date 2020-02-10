@@ -19,14 +19,15 @@ namespace Tests
             (source:new List<List<int>> { new List<int> { 1, 4 }, new List<int> { 0,4,2,3}, new List<int>{1,3},
             new List<int>{1,4,2},new List<int>{3,0,2} }, value:4, result:true),
             (source:new List<List<int>> { new List<int> { 1, 4 }, new List<int> { 0,4,2,3}, new List<int>{1,3},
-            new List<int>{1,4,2},new List<int>{3,0,2} }, value:5, result:true),
+            new List<int>{1,4,2},new List<int>{3,0,2} }, value:5, result:false),
             (source:new List<List<int>> { new List<int> { 1, 4 }, new List<int> { 0,4,2,3}, new List<int>{1,3},
-            new List<int>{1,4,2},new List<int>{3,0,2} }, value:-1, result:true),
+            new List<int>{1,4,2},new List<int>{3,0,2} }, value:-1, result:false),
             (source:new List<List<int>> { new List<int> { 1, 4 }, new List<int> { 0,4,2,3}, new List<int>{1,3},
-            new List<int>{1,4,2},new List<int>{3,0,2} }, value:int.MaxValue, result:true),
+            new List<int>{1,4,2},new List<int>{3,0,2} }, value:int.MaxValue, result:false),
             (source:new List<List<int>> { new List<int> { 1, 4 }, new List<int> { 0,4,2,3}, new List<int>{1,3},
-            new List<int>{1,4,2},new List<int>{3,0,2} }, value:int.MinValue, result:true),
+            new List<int>{1,4,2},new List<int>{3,0,2} }, value:int.MinValue, result:false),
         };
+
         [SetUp]
         public void Setup()
         {

@@ -39,7 +39,35 @@ namespace project
 
         public bool BreadthFirstSearch(int value)
         {
-            throw new NotImplementedException();
+            if (StartingPoint == null)
+            {
+                return false;
+            }
+            if (StartingPoint != null && StartingPoint.Neighbours == null)
+            {
+                return StartingPoint.Index == value;
+            }
+            var queue = new Queue<Vertex>();
+            queue.Enqueue(StartingPoint);
+            while (queue.Count != 0)
+            {
+                var vertex = queue.Dequeue();
+                if (vertex.Index == value)
+                {
+                    return true;
+                }
+                vertex.Color = Color.Black;
+                for (int i = 0; i < vertex.Neighbours.Count; i++)
+                {
+                    var vertexNeighbour = vertex.Neighbours[i];
+                    if (vertexNeighbour.Color == Color.White)
+                    {
+                        vertexNeighbour.Color = Color.Grey;
+                        queue.Enqueue(vertexNeighbour);
+                    }
+                }
+            }
+            return false;
         }
     }
 }
