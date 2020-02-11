@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace project
 {
@@ -43,10 +44,7 @@ namespace project
             {
                 return false;
             }
-            if (StartingPoint != null && StartingPoint.Neighbours == null)
-            {
-                return StartingPoint.Index == value;
-            }
+
             var queue = new Queue<Vertex>();
             queue.Enqueue(StartingPoint);
             while (queue.Count != 0)
@@ -54,6 +52,7 @@ namespace project
                 var vertex = queue.Dequeue();
                 if (vertex.Index == value)
                 {
+                    CleanVertex();
                     return true;
                 }
                 vertex.Color = Color.Black;
@@ -67,7 +66,62 @@ namespace project
                     }
                 }
             }
+            CleanVertex();
             return false;
+        }
+
+        private void CleanVertex()
+        {
+            if (StartingPoint == null)
+            {
+                return;
+            }
+
+            StartingPoint.Color = Color.White;
+            var queue = new Queue<Vertex>();
+            queue.Enqueue(StartingPoint);
+            while (queue.Count != 0)
+            {
+                var vertex = queue.Dequeue();
+                for (int i = 0; i < vertex.Neighbours.Count; i++)
+                {
+                    var vertexNeighbour = vertex.Neighbours[i];
+                    if (vertexNeighbour.Color != Color.White)
+                    {
+                        vertexNeighbour.Color = Color.White;
+                        queue.Enqueue(vertexNeighbour);
+                    }
+                }
+            }
+        }
+        // todo : commit, refactonig, 
+        public string Path()
+        {
+            if (StartingPoint == null)
+            {
+                return string.Empty;
+            }
+
+            var queue = new Queue<Vertex>();
+            queue.Enqueue(StartingPoint);
+            var path = new StringBuilder();
+            while (queue.Count != 0)
+            {
+                var vertex = queue.Dequeue();
+                path.Append($"{vertex.Index} ");
+                vertex.Color = Color.Black;
+                for (int i = 0; i < vertex.Neighbours.Count; i++)
+                {
+                    var vertexNeighbour = vertex.Neighbours[i];
+                    if (vertexNeighbour.Color == Color.White)
+                    {
+                        vertexNeighbour.Color = Color.Grey;
+                        queue.Enqueue(vertexNeighbour);
+                    }
+                }
+            }
+
+            return path.ToString().Trim();
         }
     }
 }
