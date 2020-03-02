@@ -7,6 +7,7 @@ namespace project
     public class Graph
     {
         Vertex StartingPoint { get; set; } = new Vertex(0);
+        int Count { get; set; }
         public Graph(List<List<int>> adjacencyList)
         {
             var arrayVertexes = new Vertex[adjacencyList.Count];
@@ -36,6 +37,65 @@ namespace project
                     StartingPoint = v;
                 }
             }
+            Count = adjacencyList.Count;
+        }
+        public Vertex CreateBreadthFirstTree()
+        {
+            return CreateBreadthFirstTree(StartingPoint);
+        }
+        // todo : refactoring
+        private Vertex CreateBreadthFirstTree(Vertex start)
+        {
+            var arrayVertexes = new Vertex[Count];
+            Vertex result = null;
+
+            var queue = new Queue<Vertex>();
+            queue.Enqueue(start);
+            while (queue.Count > 0)
+            {
+                var vertex = queue.Dequeue();
+                vertex.Color = Color.Black;
+                Vertex vertexParent = null;
+                if (arrayVertexes[vertex.Index] == null)
+                {
+                    vertexParent = new Vertex(vertex.Index);
+                    arrayVertexes[vertex.Index] = vertexParent;
+                }
+                else
+                {
+                    vertexParent = arrayVertexes[vertex.Index];
+                }
+                if (vertex.Neighbours != null)
+                {
+                    vertexParent.Neighbours = new List<Vertex>();
+                    for (int i = 0; i < vertex.Neighbours.Count; i++)
+                    {
+                        var neighbour = vertex.Neighbours[i];
+                        if (neighbour.Color == Color.White)
+                        {
+                            Vertex vertexInner = null;
+                            if (arrayVertexes[neighbour.Index] == null)
+                            {
+                                vertexInner = new Vertex(neighbour.Index);
+                                arrayVertexes[neighbour.Index] = vertexInner;
+                            }
+                            else
+                            {
+                                vertexInner = arrayVertexes[neighbour.Index];
+                            }
+                            vertexParent.Neighbours.Add(vertexInner);
+                            neighbour.Color = Color.Grey;
+                            queue.Enqueue(neighbour);
+                        }
+                    }
+                }
+                if (result == null)
+                {
+                    result = vertexParent;
+                }
+            }
+            CleanVertex();
+            return result;
         }
 
         public bool BreadthFirstSearch(int value)
@@ -45,14 +105,13 @@ namespace project
             while (queue.Count != 0)
             {
                 var vertex = queue.Dequeue();
-                // diff
                 if (vertex.Index == value)
                 {
                     CleanVertex();
                     return true;
                 }
                 vertex.Color = Color.Black;
-                CycleInNeighbour(vertex, queue, v => v.Color == Color.White, v => v.Color = Color.Grey);
+                Helper.CycleInNeighbour(vertex, queue, v => v.Color == Color.White, v => v.Color = Color.Grey);
             }
             CleanVertex();
             return false;
@@ -66,39 +125,10 @@ namespace project
             while (queue.Count != 0)
             {
                 var vertex = queue.Dequeue();
-                CycleInNeighbour(vertex, queue, v => v.Color != Color.White, v => v.Color = Color.White);
+                Helper.CycleInNeighbour(vertex, queue, v => v.Color != Color.White, v => v.Color = Color.White);
             }
         }
 
-        public string Path()
-        {
-            var queue = new Queue<Vertex>();
-            queue.Enqueue(StartingPoint);
-            var path = new StringBuilder();
 
-            while (queue.Count != 0)
-            {
-                var vertex = queue.Dequeue();
-                path.Append($"{vertex.Index} ");
-                vertex.Color = Color.Black;
-                CycleInNeighbour(vertex, queue, v => v.Color == Color.White, v => v.Color = Color.Grey);
-            }
-
-            return path.ToString().Trim();
-        }
-
-        private void CycleInNeighbour(Vertex vertex, Queue<Vertex> queue, Predicate<Vertex> predicate, Action<Vertex> action)
-        {
-            for (int i = 0; i < vertex.Neighbours.Count; i++)
-            {
-                var vertexNeighbour = vertex.Neighbours[i];
-                if (predicate(vertexNeighbour))
-                {
-                    action(vertexNeighbour);
-                    queue.Enqueue(vertexNeighbour);
-                }
-            }
-
-        }
     }
 }

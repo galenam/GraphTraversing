@@ -12,5 +12,12 @@ namespace project
             Index = index;
             Color = Color.White;
         }
+
+        public Vertex(int index, List<Vertex> neighbours)
+        {
+            Index = index;
+            Color = Color.White;
+            Neighbours = neighbours;
+        }
     }
 }
