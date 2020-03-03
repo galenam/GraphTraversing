@@ -41,53 +41,21 @@ namespace project
         }
         public Vertex CreateBreadthFirstTree()
         {
-            return CreateBreadthFirstTree(StartingPoint);
-        }
-        // todo : refactoring
-        private Vertex CreateBreadthFirstTree(Vertex start)
-        {
             var arrayVertexes = new Vertex[Count];
             Vertex result = null;
 
             var queue = new Queue<Vertex>();
-            queue.Enqueue(start);
+            queue.Enqueue(StartingPoint);
             while (queue.Count > 0)
             {
                 var vertex = queue.Dequeue();
                 vertex.Color = Color.Black;
-                Vertex vertexParent = null;
-                if (arrayVertexes[vertex.Index] == null)
-                {
-                    vertexParent = new Vertex(vertex.Index);
-                    arrayVertexes[vertex.Index] = vertexParent;
-                }
-                else
-                {
-                    vertexParent = arrayVertexes[vertex.Index];
-                }
+                Vertex vertexParent = GetOrCreateVertex(arrayVertexes, vertex.Index);
                 if (vertex.Neighbours != null)
                 {
                     vertexParent.Neighbours = new List<Vertex>();
-                    for (int i = 0; i < vertex.Neighbours.Count; i++)
-                    {
-                        var neighbour = vertex.Neighbours[i];
-                        if (neighbour.Color == Color.White)
-                        {
-                            Vertex vertexInner = null;
-                            if (arrayVertexes[neighbour.Index] == null)
-                            {
-                                vertexInner = new Vertex(neighbour.Index);
-                                arrayVertexes[neighbour.Index] = vertexInner;
-                            }
-                            else
-                            {
-                                vertexInner = arrayVertexes[neighbour.Index];
-                            }
-                            vertexParent.Neighbours.Add(vertexInner);
-                            neighbour.Color = Color.Grey;
-                            queue.Enqueue(neighbour);
-                        }
-                    }
+                    Helper.CycleInNeighbour(vertex, queue, n => n.Color == Color.White,
+                        neighbour => AddNeighbour(arrayVertexes, neighbour, vertexParent));
                 }
                 if (result == null)
                 {
@@ -96,6 +64,29 @@ namespace project
             }
             CleanVertex();
             return result;
+        }
+
+        private void AddNeighbour(Vertex[] arrayVertexes, Vertex neighbour, Vertex vertexParent)
+        {
+            Vertex vertexInner = GetOrCreateVertex(arrayVertexes, neighbour.Index);
+            vertexParent.Neighbours.Add(vertexInner);
+            neighbour.Color = Color.Grey;
+        }
+
+        private static Vertex GetOrCreateVertex(Vertex[] arrayVertexes, int index)
+        {
+            Vertex vertexResult = null;
+            if (arrayVertexes[index] == null)
+            {
+                vertexResult = new Vertex(index);
+                arrayVertexes[index] = vertexResult;
+            }
+            else
+            {
+                vertexResult = arrayVertexes[index];
+            }
+
+            return vertexResult;
         }
 
         public bool BreadthFirstSearch(int value)
